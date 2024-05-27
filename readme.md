@@ -8,8 +8,6 @@ Welcome to the Motion Quartet Bistable Perception Paradigm experiment repository
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 - [References](#references)
 
 ## Introduction
