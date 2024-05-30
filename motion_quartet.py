@@ -1,24 +1,27 @@
 import numpy as np
+import pandas as pd
 from psychopy import visual, core, event
 from dot_patterns import *
 
 window_size = [1400, 800]
-quartet_mat = [3, 4] # automatic
+quartet_mat = [20, 10] # automatic
 quartet_mat_orig = np.full(quartet_mat, 1)
+ratio_mat = [20, 10] # automatic
+ratio_mat_orig = np.full(quartet_mat, 1)
 
 # comment both of the following out if automatic is used 
-quartet_mat_orig = np.array([[0, 0, 1, 0, 0],  # manual
-                             [0, 1, 2, 1, 0],
-                             [0, 0, 1, 0, 0]]).T
+# quartet_mat_orig = np.array([[0, 0, 1, 0, 0],  # manual
+#                              [0, 1, 2, 1, 0],
+#                              [0, 0, 1, 0, 0]]).T
 
-ratio_mat_orig =   np.array([[0, 0, 1, 0, 0],  # determines which ratios are allowed to change 
-                             [0, 1, 0, 1, 0],
-                             [0, 0, 1, 0, 0]]).T
+# ratio_mat_orig =   np.array([[0, 0, 1, 0, 0],  # determines which ratios are allowed to change 
+#                              [0, 1, 0, 1, 0],
+#                              [0, 0, 1, 0, 0]]).T
 
 num_cycles = 200  # Number of cycles to show the motion quartet
 frame_duration = 0.3  # Time each frame is shown (in seconds)
 dot_size = 10
-distance = 20 #vertical distance of dots at 1/1 ratio in pixels
+distance = 30 #vertical distance of dots at 1/1 ratio in pixels
 aspect_ratio = [1, 1.3]
 aspect_ratio_gradient = False
 
@@ -79,20 +82,32 @@ stims = [visual.ElementArrayStim(win=win,
                                  sizes=dot_size * np.tile(quartet_mat[quartet_mat != 0], len(n_visible[idx]))
                                  ) for idx in range(len(n_visible))]
 
+fixation = visual.TextStim(win, text='+', pos=(0, 0), units="pix", height = 30)
+
 direction = 1
 
-for cycle in range(num_cycles):
-    stims[cycle%len(stims)].draw()
-    win.flip()
-    if cycle%4 == 0:
-        aspect_ratio[0] += direction * 0.1
-        [stims[pos].setXYs(calculate_position()[pos]) for pos in np.arange(len(stims))]
-    core.wait(frame_duration)
-    if event.getKeys(keyList=['space']): 
-            direction = -direction # switch aspect ratio change whenever space is pressed
-    if event.getKeys(keyList=['escape']):
-        win.close()
-        core.quit()
+data = pd.DataFrame([])
+clock = core.Clock()
 
+try: 
+    for cycle in range(num_cycles):
+        stims[cycle%len(stims)].draw()
+        fixation.draw()
+        win.flip()
+        if cycle%4 == 0:
+            aspect_ratio[0] += direction * 0.1
+            [stims[pos].setXYs(calculate_position()[pos]) for pos in np.arange(len(stims))]
+        core.wait(frame_duration)
+        if event.getKeys(keyList=['space']): 
+                direction = -direction # switch aspect ratio change whenever space is pressed
+        if event.getKeys(keyList=['escape']):
+            data.to_csv("data")
+            win.close()
+            core.quit()
+            
+except: 
+    data.to_csv("data")
+
+data.to_csv("data")
 win.close()
 core.quit()
